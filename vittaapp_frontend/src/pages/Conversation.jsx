@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+
 import { useAuth } from '../context/AuthContext'
 import { chatAPI } from '../services/api'
 
@@ -20,19 +21,34 @@ export default function Conversation() {
   const intervalRef = useRef(null)
 
 
-  const fetchMessages = useCallback(async () => {
-    const data = await chatAPI.conversa(userId)
-    setMessages(data.messages)
-    setOther(data.user)
-    setLoading(false)
-  }, [userId])
-
   useEffect(() => {
+    let isMounted = true
+
+    const fetchMessages = async () => {
+      try {
+        const data = await chatAPI.conversa(userId)
+        if (!isMounted) return
+        setMessages(data.messages)
+        setOther(data.user)
+        setLoading(false)
+      } catch (err) {
+        // mantém loading como false mesmo em erro para não travar a tela
+        if (!isMounted) return
+        setLoading(false)
+      }
+    }
+
     fetchMessages()
+
     // Auto-refresh every 2s
     intervalRef.current = setInterval(fetchMessages, 2000)
-    return () => clearInterval(intervalRef.current)
-  }, [fetchMessages])
+
+    return () => {
+      isMounted = false
+      clearInterval(intervalRef.current)
+    }
+  }, [userId])
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -60,6 +76,7 @@ export default function Conversation() {
   if (loading) return <div className="spinner" />
 
   return (
+
     <div className="page" style={{ maxWidth: 700, display: 'flex', flexDirection: 'column', height: 'calc(100vh - var(--nav-h) - 80px)' }}>
       {/* Header */}
       <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, padding: '14px 18px', flexShrink: 0 }}>
@@ -137,3 +154,4 @@ export default function Conversation() {
     </div>
   )
 }
+  

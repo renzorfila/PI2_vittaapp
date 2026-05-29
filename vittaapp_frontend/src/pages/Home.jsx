@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+
 import { Link, useSearchParams } from 'react-router-dom'
 import { perfisAPI } from '../services/api'
 
@@ -110,9 +111,11 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1)
   const PER_PAGE = 9
 
-const fetchData = useCallback(() => {
-  setLoading(true)
-  perfisAPI.listar({ q: search, area: selectedArea, page })
+  useEffect(() => {
+    setLoading(true)
+
+    perfisAPI.listar({ q: search, area: selectedArea, page })
+
     .then(data => {
       // Spring Boot retorna { content: [...], totalPages: N }
       const lista = data.content ?? data
@@ -124,7 +127,6 @@ const fetchData = useCallback(() => {
     .finally(() => setLoading(false))
 }, [search, selectedArea, page])
 
-  useEffect(() => { fetchData() }, [fetchData])
 
   const handleSearch = (e) => {
     e.preventDefault()

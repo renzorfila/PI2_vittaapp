@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
+
 import { useAuth } from '../context/AuthContext'
 import { agendaAPI } from '../services/api'
 import { useToast } from '../components/Toast'
@@ -117,29 +118,47 @@ export default function Agenda() {
   const [bookingSlot, setBookingSlot] = useState(null)
 
 
-const fetchSlots = useCallback(() => {
-  setLoading(true)
-  agendaAPI.listarSlots()
-    .then(setSlots)
-    .catch(console.error)
-    .finally(() => setLoading(false))
-}, [])
+  useEffect(() => {
+    const run = async () => {
+      setLoading(true)
+      try {
+        const [slotsData, bookingsData] = await Promise.all([
+          agendaAPI.listarSlots(),
+          agendaAPI.meusAgendamentos(),
+        ])
+        setSlots(slotsData)
+        setBookings(bookingsData)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-const fetchBookings = useCallback(() => {
-  agendaAPI.meusAgendamentos()
-    .then(setBookings)
-    .catch(console.error)
-}, [])
+    run()
+  }, [])
 
-  useEffect(() => { fetchSlots(); fetchBookings() }, [fetchSlots, fetchBookings])
+
+  const refreshData = async () => {
+
+    agendaAPI.listarSlots()
+      .then(setSlots)
+      .catch(console.error)
+
+    agendaAPI.meusAgendamentos()
+      .then(setBookings)
+      .catch(console.error)
+  }
 
   const handleBook = async (slot) => {
+
     if (slot.available === 0) { toast?.show('Este horário está cheio', 'error'); return }
     setBookingSlot(slot.id)
     try {
       await agendaAPI.agendar(slot.id)
       toast?.show('Sessão agendada com sucesso!')
-      fetchSlots(); fetchBookings()
+      refreshData()
+
     } catch (err) {
       toast?.show(err.message || 'Erro ao agendar', 'error')
     } finally {
@@ -152,7 +171,8 @@ const fetchBookings = useCallback(() => {
     try {
       await agendaAPI.cancelar(bookingId)
       toast?.show('Agendamento cancelado')
-      fetchBookings(); fetchSlots()
+      refreshData()
+
     } catch (err) {
       toast?.show(err.message || 'Erro ao cancelar', 'error')
     }
@@ -281,7 +301,16 @@ const fetchBookings = useCallback(() => {
         </>
       )}
 
-      {showModal && <CreateSlotModal onClose={() => setShowModal(false)} onCreate={fetchSlots} />}
+      {showModal && <CreateSlotModal
+        onClose={() => setShowModal(false)}
+        onCreate={() => {
+          // Recarrega após criar série
+          refreshData()
+        }}
+
+      />}
+
+
     </div>
   )
 }
