@@ -10,7 +10,7 @@ import java.util.List;
 // @RestController = Controller que retorna JSON (não HTML)
 @RestController
 // @RequestMapping = prefixo de todas as rotas desta classe
-@RequestMapping("/perfis")
+@RequestMapping("/api/perfis")
 @RequiredArgsConstructor
 public class PerfilController {
 
