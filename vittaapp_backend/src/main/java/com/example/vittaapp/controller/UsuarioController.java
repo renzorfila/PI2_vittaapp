@@ -1,39 +1,80 @@
 package com.example.vittaapp.controller;
 
 import com.example.vittaapp.model.Usuario;
-import com.example.vittaapp.repository.UsuarioRepository;
+import com.example.vittaapp.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/usuarios")
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService service;
 
-    @PostMapping
+    // ─────────────────────────────────────────────────────────────
+    // POST /api/auth/cadastro
+    // Body: { "nome": "Renzo", "email": "renzo@email.com", "senha": "123456" }
+    // ─────────────────────────────────────────────────────────────
+    @PostMapping("/api/auth/cadastro")
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario criar(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Usuario cadastro(@RequestBody Map<String, String> body) {
+        String nome  = body.get("nome");
+        String email = body.get("email");
+        String senha = body.get("senha");
+
+        if (nome == null || nome.isBlank())
+            throw new RuntimeException("Nome é obrigatório");
+        if (email == null || email.isBlank())
+            throw new RuntimeException("Email é obrigatório");
+        if (senha == null || senha.length() < 6)
+            throw new RuntimeException("Senha deve ter pelo menos 6 caracteres");
+
+        return service.cadastrar(nome, email, senha);
     }
 
     // ─────────────────────────────────────────────────────────────
-    // PUT /usuarios/1
+    // POST /api/auth/login
+    // Body: { "email": "renzo@email.com", "senha": "123456" }
+    // Retorna: { "token": "...", "user": { "id", "name", "email", ... } }
     // ─────────────────────────────────────────────────────────────
-    @PutMapping("/{id}")
-    public Usuario atualizar(@PathVariable Long id, @RequestBody Usuario dadosAtualizados) {
-        return usuarioRepository.findById(id)
-                .map(usuario -> {
-                    // Atualiza os campos necessários (exceto o ID e a data de criação)
-                    usuario.setNome(dadosAtualizados.getNome());
-                    usuario.setEmail(dadosAtualizados.getEmail());
-                    usuario.setSenhaHash(dadosAtualizados.getSenhaHash());
-                    
-                    // Salva as alterações por cima do utilizador existente
-                    return usuarioRepository.save(usuario);
-                })
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o id: " + id));
+    @PostMapping("/api/auth/login")
+    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String senha = body.get("senha");
+
+        if (email == null || senha == null)
+            throw new RuntimeException("Email e senha são obrigatórios");
+
+        return service.login(email, senha);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // GET /api/usuarios/{id}
+    // ─────────────────────────────────────────────────────────────
+    @GetMapping("/api/usuarios/{id}")
+    public Usuario buscar(@PathVariable Long id) {
+        return service.buscarPorId(id);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // PUT /api/usuarios/{id}
+    // Body: { "nome": "Novo Nome" }
+    // ─────────────────────────────────────────────────────────────
+    @PutMapping("/api/usuarios/{id}")
+    public Usuario atualizar(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        return service.atualizar(id, body.get("nome"));
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // DELETE /api/usuarios/{id}
+    // ─────────────────────────────────────────────────────────────
+    @DeleteMapping("/api/usuarios/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
     }
 }
