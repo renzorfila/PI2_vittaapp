@@ -31,6 +31,7 @@ public class Mensagem {
 
     // false = não lida, true = lida
     @Column(nullable = false)
+    @Builder.Default
     private Boolean lida = false;
 
     @Column(name = "criado_em")

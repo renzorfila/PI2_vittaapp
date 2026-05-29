@@ -25,6 +25,7 @@ public class Pagamento {
     private Double valor;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private PagamentoStatus status = PagamentoStatus.PENDENTE;
 
     @Column(name = "criado_em")
