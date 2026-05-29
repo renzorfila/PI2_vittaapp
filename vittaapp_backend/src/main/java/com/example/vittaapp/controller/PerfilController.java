@@ -7,20 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// @RestController = Controller que retorna JSON (não HTML)
 @RestController
-// @RequestMapping = prefixo de todas as rotas desta classe
 @RequestMapping("/api/perfis")
 @RequiredArgsConstructor
 public class PerfilController {
 
     private final PerfilService service;
 
-    // ─────────────────────────────────────────────────────────────
     // GET /api/perfis
     // GET /api/perfis?q=personal
     // GET /api/perfis?area=Pilates
-    // ─────────────────────────────────────────────────────────────
     @GetMapping
     public List<PerfilProfissional> listar(
             // @RequestParam = parâmetros na URL (?q=...)
@@ -30,21 +26,16 @@ public class PerfilController {
         return service.listar(q, area);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // GET /api/perfis/1
-    // ─────────────────────────────────────────────────────────────
     @GetMapping("/{id}")
     // @PathVariable = captura o {id} da URL
     public PerfilProfissional buscar(@PathVariable Long id) {
         return service.buscar(id);
     }
 
-    // ─────────────────────────────────────────────────────────────
     // POST /api/perfis?usuarioId=2
     // Body (JSON): { "titulo": "Personal Trainer", "cidade": "SP", ... }
-    // ─────────────────────────────────────────────────────────────
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED) // retorna HTTP 201
+    @ResponseStatus(HttpStatus.CREATED) // retorna HTTP 201 (criado)
     public PerfilProfissional criar(
             @RequestParam Long usuarioId,
             // @RequestBody = lê o JSON do corpo da requisição
@@ -52,10 +43,6 @@ public class PerfilController {
         return service.criar(perfil, usuarioId);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // PUT /api/perfis/1
-    // Body (JSON): campos atualizados
-    // ─────────────────────────────────────────────────────────────
     @PutMapping("/{id}")
     public PerfilProfissional atualizar(
             @PathVariable Long id,
@@ -63,9 +50,6 @@ public class PerfilController {
         return service.atualizar(id, dados);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // DELETE /api/perfis/1
-    // ─────────────────────────────────────────────────────────────
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT) // retorna HTTP 204 (sem conteúdo)
     public void deletar(@PathVariable Long id) {
