@@ -26,8 +26,10 @@ export default function Conversation() {
 
     const fetchMessages = async () => {
       try {
-        const data = await chatAPI.conversa(userId)
+        const data = await chatAPI.conversa(userId, user.id)
+
         if (!isMounted) return
+
         setMessages(data.messages)
         setOther(data.user)
         setLoading(false)

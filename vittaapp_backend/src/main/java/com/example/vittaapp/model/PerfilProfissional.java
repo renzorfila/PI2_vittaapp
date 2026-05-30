@@ -1,26 +1,16 @@
 package com.example.vittaapp.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "perfil_profissional")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+  @Builder
 public class PerfilProfissional {
 
     @Id
@@ -29,36 +19,47 @@ public class PerfilProfissional {
 
     @Column(nullable = false)
     private String nome;
+
     private String titulo;
 
     @Column(columnDefinition = "TEXT")
     private String descricao;
+
     private String cidade;
-    private String area;
+
     private String experiencia;
+
+    @Column(name = "forma_atendimento")
+    private String formaAtendimento;
 
     @Column(name = "valor_por_sessao")
     private Double valorPorSessao;
 
-    @Column(name= "forma_atendimento")
-    private String formaAtendimento;
-
-    @Column(name= "avaliacao_media")
+    @Column(name = "avaliacao_media")
     private Double avaliacaoMedia;
 
-    @Column(name= "criado_em")
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
 
+    // Relacionamento com Usuario (dono do perfil)
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    // Área de atuação (mantido como texto para evitar dependência ausente)
+    @Column(name = "area_atuacao")
+    private String areaAtuacao;
+
+    // Galeria de imagens do perfil
+    // mappedBy = nome do campo "perfil" dentro de PerfilImage
+    // cascade = quando salvar/deletar o perfil, faz o mesmo nas imagens
+    @OneToMany(mappedBy = "perfil", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("ordem ASC")
+    private List<PerfilImage> imagens;
+
     @PrePersist
     public void prePersist() {
-        this.criadoEm = LocalDateTime.now();   
+        this.criadoEm = LocalDateTime.now();
         if (this.avaliacaoMedia == null) this.avaliacaoMedia = 0.0;
-
     }
-      
-
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { chatAPI } from '../services/api'
+
 
 
 function timeAgo(iso) {
@@ -17,12 +19,18 @@ export default function Inbox() {
   const [conversations, setConversations] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const { user } = useAuth()
+
   useEffect(() => {
-    chatAPI.inbox()
+    if (!user?.id) return
+    setLoading(true)
+    chatAPI
+      .inbox(user.id)
       .then(setConversations)
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [])
+  }, [user?.id])
+
 
   return (
     <div className="page" style={{ maxWidth: 700 }}>

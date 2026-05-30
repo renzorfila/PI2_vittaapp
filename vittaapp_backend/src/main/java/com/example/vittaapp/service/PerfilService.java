@@ -1,6 +1,5 @@
 package com.example.vittaapp.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,13 +22,7 @@ public class PerfilService {
             return perfilRepository.findByTituloContainingIgnoreCase(q);
         }
         if (area != null && !area.isBlank()){
-            List<PerfilProfissional> perfis = new ArrayList<>();
-            for (PerfilProfissional perfil : perfilRepository.findAll()) {
-                if (area.equals(perfil.getArea())) {
-                    perfis.add(perfil);
-                }
-            }
-            return perfis;
+            return perfilRepository.findByArea(area);
         }
         return perfilRepository.findAll();
     }
@@ -58,7 +51,6 @@ public class PerfilService {
         perfil.setTitulo(dados.getTitulo());
         perfil.setDescricao(dados.getDescricao());
         perfil.setCidade(dados.getCidade());
-        perfil.setArea(dados.getArea());
         perfil.setValorPorSessao(dados.getValorPorSessao());
         perfil.setFormaAtendimento(dados.getFormaAtendimento());
         perfil.setExperiencia(dados.getExperiencia());

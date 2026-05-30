@@ -36,4 +36,9 @@ public class ChatController {
     public Map<String, Long> contarNaoLidas(@RequestParam Long userId) {
         return Map.of("total", service.contarNaoLidas(userId));
     }
+
+    @GetMapping("/inbox")
+    public List<com.example.vittaapp.model.InboxItem> getInboxProfissionais(@RequestParam Long userId) {
+        return service.getInboxProfissionais(userId);
+    }
 }

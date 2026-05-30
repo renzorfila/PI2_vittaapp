@@ -78,19 +78,38 @@ export const agendaAPI = {
     const q = new URLSearchParams(params).toString()
     return api.get(`/agenda/slots${q ? '?' + q : ''}`)
   },
+
+  // backend atual não tem endpoints /agenda/recorrentes
+  // (mantive as rotas existentes caso você implemente depois)
   criarRecorrente:   (body)        => api.post('/agenda/recorrentes', body),
   listarRecorrentes: ()            => api.get('/agenda/recorrentes'),
   deletarRecorrente: (id)          => api.delete(`/agenda/recorrentes/${id}`),
-  agendar:           (slotId)      => api.post('/agenda/agendar', { slotId }),
-  meusAgendamentos:  ()            => api.get('/agenda/meus'),
-  cancelar:          (bookingId)   => api.patch(`/agenda/agendamentos/${bookingId}/cancelar`),
+
+  // POST /api/agenda/agendar?slotId=1&studentId=2
+  agendar:           (slotId, studentId) => api.post('/agenda/agendar', { slotId, studentId }),
+
+  // GET /api/agenda/meus?studentId=2
+  meusAgendamentos:  (studentId)        => api.get(`/agenda/meus?studentId=${studentId}`),
+
+  // PATCH /api/agenda/agendamentos/{id}/cancelar
+  cancelar:          (bookingId)       => api.patch(`/agenda/agendamentos/${bookingId}/cancelar`),
 }
 
+
 export const chatAPI = {
-  inbox:       ()             => api.get('/mensagens/inbox'),
-  conversa:    (userId)       => api.get(`/mensagens/conversa/${userId}`),
-  enviar:      (toId, texto)  => api.post('/mensagens/enviar', { destinatarioId: toId, texto }),
+  // GET /api/mensagens/inbox?userId=MEUID
+  // retorna lista de conversas (somente profissionais)
+  inbox: (userId) => api.get(`/mensagens/inbox?userId=${userId}`),
+
+
+
+  // GET /api/mensagens/conversa/{outroId}?meId={meId}
+  conversa: (outroId, meId) => api.get(`/mensagens/conversa/${outroId}?meId=${meId}`),
+
+  // POST /api/mensagens/enviar  body: { remetenteId, destinatarioId, texto }
+  enviar: (remetenteId, destinatarioId, texto) => api.post('/mensagens/enviar', { remetenteId, destinatarioId, texto }),
 }
+
 
 export const usuariosAPI = {
   perfil:     ()     => api.get('/usuarios/me'),

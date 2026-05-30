@@ -19,4 +19,28 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
     List<Mensagem> findConversa(@Param("idA") Long idA, @Param("idB") Long idB);
 
     long countByDestinatarioIdAndLidaFalse(Long destinatarioId);
+
+    // Última mensagem por par de usuários envolvendo :meId
+    @Query("""
+        SELECT m
+        FROM Mensagem m
+        WHERE m.id IN (
+            SELECT MAX(m2.id)
+            FROM Mensagem m2
+            WHERE (m2.remetente.id = :meId AND m2.destinatario.id IN (
+                SELECT u.id FROM Usuario u WHERE u.temPerfilProfissional = true
+            ))
+               OR (m2.destinatario.id = :meId AND m2.remetente.id IN (
+                SELECT u.id FROM Usuario u WHERE u.temPerfilProfissional = true
+            ))
+            GROUP BY 
+                CASE 
+                    WHEN m2.remetente.id = :meId THEN m2.destinatario.id
+                    ELSE m2.remetente.id
+                END
+        )
+        ORDER BY m.criadoEm DESC
+    """)
+    List<Mensagem> findUltimasMensagensInboxProfissionais(@Param("meId") Long meId);
 }
+

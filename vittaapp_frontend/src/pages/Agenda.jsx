@@ -124,8 +124,9 @@ export default function Agenda() {
       try {
         const [slotsData, bookingsData] = await Promise.all([
           agendaAPI.listarSlots(),
-          agendaAPI.meusAgendamentos(),
+          agendaAPI.meusAgendamentos(user.id),
         ])
+
         setSlots(slotsData)
         setBookings(bookingsData)
       } catch (err) {
