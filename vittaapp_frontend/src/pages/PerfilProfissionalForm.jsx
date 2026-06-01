@@ -46,10 +46,10 @@ export default function PerfilProfissionalForm() {
     try {
       const body = { ...form, valor_por_sessao: Number(form.valor_por_sessao) }
       if (isEdit) {
-        await perfisAPI.atualizar('me', body)
+        await perfisAPI.atualizar(body)
         toast?.show('Perfil atualizado com sucesso!')
       } else {
-        await perfisAPI.criar(body)
+        await perfisAPI.criar(user.id,body)
         updateUser({ temPerfilProfissional: true })
         toast?.show('Perfil criado com sucesso!')
       }

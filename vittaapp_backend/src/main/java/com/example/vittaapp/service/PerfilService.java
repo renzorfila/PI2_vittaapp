@@ -22,7 +22,7 @@ public class PerfilService {
             return perfilRepository.findByTituloContainingIgnoreCase(q);
         }
         if (area != null && !area.isBlank()){
-            return perfilRepository.findByArea(area);
+            return perfilRepository.findByAreaAtuacao(area);
         }
         return perfilRepository.findAll();
     }

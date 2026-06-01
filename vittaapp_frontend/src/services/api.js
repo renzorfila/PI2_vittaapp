@@ -66,7 +66,7 @@ export const perfisAPI = {
     return api.get(`/perfis${q ? '?' + q : ''}`)
   },
   buscar:   (id)          => api.get(`/perfis/${id}`),
-  criar:    (body)        => api.post('/perfis', body),
+  criar: (usuarioId, body) => api.post(`/perfis?usuarioId=${usuarioId}`, body),
   atualizar:(id, body)    => api.put(`/perfis/${id}`, body),
   deletar:  (id)          => api.delete(`/perfis/${id}`),
   avaliar:  (id, nota)    => api.post(`/perfis/${id}/avaliar`, { nota }),
@@ -85,8 +85,9 @@ export const agendaAPI = {
   listarRecorrentes: ()            => api.get('/agenda/recorrentes'),
   deletarRecorrente: (id)          => api.delete(`/agenda/recorrentes/${id}`),
 
-  // POST /api/agenda/agendar?slotId=1&studentId=2
-  agendar:           (slotId, studentId) => api.post('/agenda/agendar', { slotId, studentId }),
+  // POST /api/agenda/agendar?slotId=1&studentId=2 
+  agendar: (slotId, studentId) =>
+  api.post(`/agenda/agendar?slotId=${slotId}&studentId=${studentId}`),
 
   // GET /api/agenda/meus?studentId=2
   meusAgendamentos:  (studentId)        => api.get(`/agenda/meus?studentId=${studentId}`),
@@ -110,8 +111,7 @@ export const chatAPI = {
   enviar: (remetenteId, destinatarioId, texto) => api.post('/mensagens/enviar', { remetenteId, destinatarioId, texto }),
 }
 
-
 export const usuariosAPI = {
-  perfil:     ()     => api.get('/usuarios/me'),
-  atualizar:  (body) => api.put('/usuarios/me', body),
+  perfil: (id) => api.get(`/usuarios/${id}`),
+  atualizar: (id, body) => api.put(`/usuarios/${id}`, body),
 }

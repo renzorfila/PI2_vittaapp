@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface PerfilRepository extends JpaRepository<PerfilProfissional, Long> {
 
     // SELECT * FROM perfis WHERE area = ?
-    List<PerfilProfissional> findByArea(String area);
+    List<PerfilProfissional> findByAreaAtuacao(String areaAtuacao);
 
     // SELECT * FROM perfis WHERE titulo LIKE %?% (case insensitive)
     List<PerfilProfissional> findByTituloContainingIgnoreCase(String q);
@@ -19,7 +19,7 @@ public interface PerfilRepository extends JpaRepository<PerfilProfissional, Long
     List<PerfilProfissional> findByCidade(String cidade);
 
     // SELECT * FROM perfis WHERE area = ? AND cidade = ?
-    List<PerfilProfissional> findByAreaAndCidade(String area, String cidade);
+    List<PerfilProfissional> findByAreaAtuacaoAndCidade(String areaAtuacao, String cidade);
 
     // SELECT * FROM perfis WHERE usuario_id = ?
     Optional<PerfilProfissional> findByUsuarioId(Long usuarioId);

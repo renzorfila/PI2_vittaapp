@@ -156,7 +156,7 @@ export default function Agenda() {
     if (slot.available === 0) { toast?.show('Este horário está cheio', 'error'); return }
     setBookingSlot(slot.id)
     try {
-      await agendaAPI.agendar(slot.id)
+      await agendaAPI.agendar(slot.id, user.id)
       toast?.show('Sessão agendada com sucesso!')
       refreshData()
 
