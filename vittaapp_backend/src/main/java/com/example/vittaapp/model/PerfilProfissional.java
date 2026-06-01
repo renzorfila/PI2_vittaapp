@@ -17,9 +17,6 @@ public class PerfilProfissional {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
-
     private String titulo;
 
     @Column(columnDefinition = "TEXT")
@@ -62,4 +59,5 @@ public class PerfilProfissional {
         this.criadoEm = LocalDateTime.now();
         if (this.avaliacaoMedia == null) this.avaliacaoMedia = 0.0;
     }
+
 }

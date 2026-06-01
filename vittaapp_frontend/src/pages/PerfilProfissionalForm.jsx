@@ -44,7 +44,15 @@ export default function PerfilProfissionalForm() {
 
     setLoading(true)
     try {
-      const body = { ...form, valor_por_sessao: Number(form.valor_por_sessao) }
+      const body = {
+    titulo: form.titulo,
+    descricao: form.descricao,
+    cidade: form.cidade,
+    experiencia: form.experiencia,
+    formaAtendimento: form.forma_atendimento,
+    valorPorSessao: Number(form.valor_por_sessao),
+    areaAtuacao: form.area,
+  }
       if (isEdit) {
         await perfisAPI.atualizar(body)
         toast?.show('Perfil atualizado com sucesso!')
