@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-
 import { Link, useSearchParams } from 'react-router-dom'
 import { perfisAPI } from '../services/api'
-
 
 const GRAD_COLORS = [
   'linear-gradient(135deg,#16c784,#0ea5e9)',
@@ -14,16 +12,20 @@ const GRAD_COLORS = [
 ]
 
 function Stars({ value }) {
-  const full = Math.round(value)
+  const full = Math.round(value || 0)
   return (
     <span className="stars">
       {'★'.repeat(full)}{'☆'.repeat(5 - full)}
-      <span style={{ color: 'var(--muted)', marginLeft: 4, fontSize: 12 }}>{value}</span>
+      <span style={{ color: 'var(--muted)', marginLeft: 4, fontSize: 12 }}>{value || 0}</span>
     </span>
   )
 }
 
 function ProfCard({ perfil, index }) {
+  // Pega a primeira letra do nome do usuário com segurança
+  const primeiraLetra = perfil.usuario?.nome ? perfil.usuario.nome[0].toUpperCase() : 'P'
+  const nomeUsuario = perfil.usuario?.nome || 'Profissional'
+
   return (
     <Link to={`/profissionais/${perfil.id}`} style={{ textDecoration: 'none' }}>
       <div style={{
@@ -66,11 +68,11 @@ function ProfCard({ perfil, index }) {
               fontSize: 18, fontWeight: 700, color: '#fff',
               border: '2px solid rgba(255,255,255,0.3)',
             }}>
-              {perfil.usuario.name[0]}
+              {primeiraLetra}
             </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>{perfil.usuario.name}</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{perfil.cidade}</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>{nomeUsuario}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{perfil.cidade || 'Não informada'}</div>
             </div>
           </div>
         </div>
@@ -81,7 +83,7 @@ function ProfCard({ perfil, index }) {
             {perfil.titulo}
           </div>
           <span className="chip" style={{ marginBottom: 10, fontSize: 12 }}>
-            {perfil.area_atuacao?.nome || 'Geral'}
+            {perfil.area || 'Geral'}
           </span>
 
           <div style={{
@@ -89,9 +91,9 @@ function ProfCard({ perfil, index }) {
             alignItems: 'center', marginTop: 8, paddingTop: 10,
             borderTop: '1px solid var(--border)',
           }}>
-            <Stars value={perfil.avaliacao_media} />
+            <Stars value={perfil.avaliacaoMedia} />
             <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, color: 'var(--primary)', fontSize: 15 }}>
-              R$ {Number(perfil.valor_por_sessao).toFixed(0)}<span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>/h</span>
+              R$ {Number(perfil.valorPorSessao || 0).toFixed(0)}<span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>/h</span>
             </div>
           </div>
         </div>
@@ -109,24 +111,21 @@ export default function Home() {
   const [selectedArea, setSelectedArea] = useState(searchParams.get('area') || '')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const PER_PAGE = 9
 
   useEffect(() => {
     setLoading(true)
 
     perfisAPI.listar({ q: search, area: selectedArea, page })
-
     .then(data => {
-      // Spring Boot retorna { content: [...], totalPages: N }
-      const lista = data.content ?? data
+      const lista = data.content ?? data ?? []
       setPerfis(lista)
-      setAreas([...new Set(lista.map(p => p.area_atuacao?.nome).filter(Boolean))])
+      // Mapeia usando perfil.area de acordo com o seu backend
+      setAreas([...new Set(lista.map(p => p.area).filter(Boolean))])
       setTotalPages(data.totalPages ?? 1)
     })
     .catch(err => console.error(err))
     .finally(() => setLoading(false))
-}, [search, selectedArea, page])
-
+  }, [search, selectedArea, page])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -139,9 +138,9 @@ export default function Home() {
     setPage(1)
   }
 
-  // Group by area
+  // Agrupamento corrigido para p.area
   const grouped = perfis.reduce((acc, p) => {
-    const key = p.area_atuacao?.nome || 'Outros'
+    const key = p.area || 'Outros'
     if (!acc[key]) acc[key] = []
     acc[key].push(p)
     return acc

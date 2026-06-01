@@ -18,9 +18,5 @@ public class AreaAtuacao {
     @Column(nullable = false, unique = true)
     private String nome;
     private String descricao;
-
-    // Categoria pai — qual "AreaTypes" engloba esta área
-    @ManyToOne
-    @JoinColumn(name = "area_type_id")
-    private AreaTypes tipo;
+    private String categoria;
 }

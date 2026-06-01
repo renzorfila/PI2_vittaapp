@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface AreaAtuacaoRepository extends JpaRepository<AreaAtuacao, Long> {
     boolean existsByNome(String nome);
-    List<AreaAtuacao> findByTipoId(Long tipoId);
+    List<AreaAtuacao> findByCategoria(String categoria);
 }
