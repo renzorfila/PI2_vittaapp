@@ -65,9 +65,10 @@ export const perfisAPI = {
     const q = new URLSearchParams(params).toString()
     return api.get(`/perfis${q ? '?' + q : ''}`)
   },
-  buscar:   (id)          => api.get(`/perfis/${id}`),
-  criar: (usuarioId, body) => api.post(`/perfis?usuarioId=${usuarioId}`, body),
-  atualizar:(id, body)    => api.put(`/perfis/${id}`, body),
+  buscar:       (id)              => api.get(`/perfis/${id}`),
+  meuPerfil:    (usuarioId)       => api.get(`/perfis/usuario/${usuarioId}`),
+  criar:        (usuarioId, body) => api.post(`/perfis?usuarioId=${usuarioId}`, body),
+  atualizar:    (id, body)        => api.put(`/perfis/${id}`, body),
   deletar:  (id)          => api.delete(`/perfis/${id}`),
   avaliar:  (id, nota)    => api.post(`/perfis/${id}/avaliar`, { nota }),
   areas:    ()            => api.get('/areas'),

@@ -43,8 +43,12 @@ export default function Navbar() {
 
   return (
     <header style={{
-      position: 'sticky', top: 0, zIndex: 1000,
-      display: 'flex', alignItems: 'center',
+      position: 'sticky', 
+      top: 0, 
+      zIndex: 1000,
+      height: 'var(--nav-h)', // CORREÇÃO: Altura travada em 64px para evitar que a tela trema
+      display: 'flex', 
+      alignItems: 'center',
       justifyContent: 'space-between',
       padding: scrolled ? '10px 24px' : '16px 24px',
       background: '#7c3aed',

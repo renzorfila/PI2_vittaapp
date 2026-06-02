@@ -14,31 +14,29 @@ public class PerfilController {
 
     private final PerfilService service;
 
-    // GET /api/perfis
-    // GET /api/perfis?q=personal
-    // GET /api/perfis?area=Pilates
     @GetMapping
     public List<PerfilProfissional> listar(
-            // @RequestParam = parâmetros na URL (?q=...)
-            // required = false = o parâmetro é opcional
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String area) {
         return service.listar(q, area);
     }
 
     @GetMapping("/{id}")
-    // @PathVariable = captura o {id} da URL
     public PerfilProfissional buscar(@PathVariable Long id) {
         return service.buscar(id);
     }
 
-    // POST /api/perfis?usuarioId=2
-    // Body (JSON): { "titulo": "Personal Trainer", "cidade": "SP", ... }
+    // NOVA ROTA — busca o perfil pelo ID do usuário dono
+    // GET /api/perfis/usuario/3
+    @GetMapping("/usuario/{usuarioId}")
+    public PerfilProfissional buscarPorUsuario(@PathVariable Long usuarioId) {
+        return service.buscarPorUsuario(usuarioId);
+    }
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED) // retorna HTTP 201 (criado)
+    @ResponseStatus(HttpStatus.CREATED)
     public PerfilProfissional criar(
             @RequestParam Long usuarioId,
-            // @RequestBody = lê o JSON do corpo da requisição
             @RequestBody PerfilProfissional perfil) {
         return service.criar(perfil, usuarioId);
     }
@@ -51,8 +49,22 @@ public class PerfilController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) // retorna HTTP 204 (sem conteúdo)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletar(@PathVariable Long id) {
         service.deletar(id);
     }
+
+    @PostMapping("/{id}/avaliar")
+    public PerfilProfissional avaliar(
+        @PathVariable Long id,
+        @RequestBody java.util.Map<String, Integer> body) {
+
+    Integer nota = body.get("nota");
+
+    PerfilProfissional perfil = service.buscar(id);
+
+    perfil.setAvaliacaoMedia(Double.valueOf(nota));
+
+    return service.atualizarAvaliacao(perfil);
+}
 }

@@ -69,4 +69,15 @@ public class PerfilService {
         // Em vez de jogar erro, chama o método que você já escreveu lá em cima!
         return buscarPerfis(q, area);
     }
+
+    // Busca o perfil pelo ID do usuário dono
+    public PerfilProfissional buscarPorUsuario(Long usuarioId) {
+        return perfilRepository.findByUsuarioId(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Perfil não encontrado para o usuário: " + usuarioId));
+    }
+
+    public PerfilProfissional atualizarAvaliacao(PerfilProfissional perfil) {
+    return perfilRepository.save(perfil);
+    }
+
 }

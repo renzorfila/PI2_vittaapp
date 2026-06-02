@@ -111,8 +111,8 @@ export default function Agenda() {
   const { user } = useAuth()
   const toast = useToast()
   const [tab, setTab] = useState('slots') // 'slots' | 'bookings'
-  const [slots, setSlots] = useState(MOCK_SLOTS)
-  const [bookings, setBookings] = useState(MOCK_BOOKINGS)
+  const [slots, setSlots] = useState([])
+  const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [bookingSlot, setBookingSlot] = useState(null)
@@ -235,10 +235,12 @@ export default function Agenda() {
                         <span style={{ fontSize: 18 }}>📅</span>
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, marginBottom: 2 }}>{slot.title || slot.tutor?.name}</div>
-                        <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-                          {formatDateTime(slot.start)} → {formatTime(slot.end)}
-                        </div>
+                        <div style={{ fontWeight: 600, marginBottom: 2 }}>
+                        {slot.titulo || slot.tutor?.nome}
+                      </div>
+                      <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+                        {formatDateTime(slot.startTime)} → {formatTime(slot.endTime)}
+                      </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
                         <div style={{
@@ -279,9 +281,9 @@ export default function Agenda() {
                       background: statusColor[b.status],
                     }} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, marginBottom: 2 }}>{b.slot.title || b.slot.tutor?.name}</div>
+                      <div style={{ fontWeight: 600, marginBottom: 2 }}>{b.slot.titulo || b.slot.tutor?.nome}</div>
                       <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-                        {formatDateTime(b.slot.start)} → {formatTime(b.slot.end)}
+                        {formatDateTime(b.slot.startTime)} → {formatTime(b.slot.endTime)}
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>

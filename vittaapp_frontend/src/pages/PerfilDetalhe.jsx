@@ -93,14 +93,14 @@ export default function PerfilDetalhe() {
                 border: '3px solid var(--surface)',
                 marginBottom: 12,
               }}>
-                {perfil.usuario.name[0]}
+                {perfil.usuario?.nome?.[0] || '?'}
               </div>
-              <h1 style={{ fontFamily: 'var(--font-head)', fontSize: 24, marginBottom: 4 }}>{perfil.usuario.name}</h1>
+              <h1 style={{ fontFamily: 'var(--font-head)', fontSize: 24, marginBottom: 4 }}>{perfil.usuario?.nome}</h1>
               <div style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 10 }}>
-                <strong style={{ color: 'var(--text)' }}>{perfil.titulo}</strong> · {perfil.area_atuacao?.nome}
+                <strong style={{ color: 'var(--text)' }}>{perfil.titulo}</strong> · {perfil.areaAtuacao}
               </div>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                <Stars value={perfil.avaliacao_media} />
+                <Stars value={perfil.avaliacaoMedia} />
                 <span style={{ color: 'var(--muted)', fontSize: 13 }}>({perfil.avaliacoes_count} avaliações)</span>
                 <span className="chip">📍 {perfil.cidade}</span>
               </div>
@@ -128,10 +128,12 @@ export default function PerfilDetalhe() {
           </div>
 
           {/* Área */}
-          {perfil.area_atuacao?.descricao && (
+          {perfil.areaAtuacao && (
             <div className="card">
               <h3 style={{ marginBottom: 8, fontSize: 16 }}>Área de atuação</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14 }}>{perfil.area_atuacao.descricao}</p>
+              <p style={{ color: 'var(--muted)', fontSize: 14 }}>
+                {perfil.areaAtuacao}
+              </p>
             </div>
           )}
 
@@ -146,9 +148,9 @@ export default function PerfilDetalhe() {
             }}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily: 'var(--font-head)', fontSize: 40, fontWeight: 800, color: 'var(--primary)' }}>
-                  {perfil.avaliacao_media}
+                  {perfil.avaliacaoMedia}
                 </div>
-                <Stars value={Math.round(perfil.avaliacao_media)} />
+                <Stars value={Math.round(perfil.avaliacaoMedia || 0)} />
                 <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
                   {perfil.avaliacoes_count} avaliações
                 </div>
@@ -179,7 +181,7 @@ export default function PerfilDetalhe() {
             <div style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 4 }}>Valor por sessão</div>
               <div style={{ fontFamily: 'var(--font-head)', fontWeight: 800, fontSize: 30, color: 'var(--primary)' }}>
-                R$ {Number(perfil.valor_por_sessao).toFixed(0)}
+                R$ {Number(perfil.valorPorSessao || 0).toFixed(0)}
                 <span style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 400 }}>/hora</span>
               </div>
             </div>
