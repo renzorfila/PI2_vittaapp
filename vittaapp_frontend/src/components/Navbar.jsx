@@ -136,10 +136,15 @@ export default function Navbar() {
                 width: 28, height: 28, borderRadius: '50%',
                 background: 'rgba(255,255,255,0.25)',
                 border: '1.5px solid rgba(255,255,255,0.5)',
+                overflow: 'hidden',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, color: '#ffffff', fontWeight: 700,
               }}>
-                {(user.name || user.email || 'U')[0].toUpperCase()}
+                {user.foto
+                  ? <img src={user.foto} alt="avatar"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : (user.name || user.email || 'U')[0].toUpperCase()
+                }
               </div>
               <span style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.name || user.email}
@@ -156,6 +161,7 @@ export default function Navbar() {
                 minWidth: 210, boxShadow: 'var(--shadow)',
                 animation: 'slideIn 0.15s ease',
               }}>
+                <NavMenuItem to="/usuario/editar" label="👤 Meu Perfil" />
                 <NavMenuItem to="/mensagens" label="💬 Mensagens" />
                 <NavMenuItem
                   to="/perfil/editar"

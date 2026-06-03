@@ -1,7 +1,6 @@
 /**
  * Vitta App — API Service
  * Conecta ao backend Spring Boot (localhost:8080 em desenvolvimento)
- * Configure BASE_URL para o endereço do seu servidor em produção.
  */
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api'
@@ -72,6 +71,8 @@ export const perfisAPI = {
   deletar:  (id)          => api.delete(`/perfis/${id}`),
   avaliar:  (id, nota)    => api.post(`/perfis/${id}/avaliar`, { nota }),
   areas:    ()            => api.get('/areas'),
+  adicionarImagem: (perfilId, imagem, ordem) => api.post(`/perfis/${perfilId}/imagens`, { imagem, ordem }),
+  listarImagens:   (perfilId)                => api.get(`/perfis/${perfilId}/imagens`),  
 }
 
 export const agendaAPI = {
@@ -81,7 +82,7 @@ export const agendaAPI = {
   },
 
   // backend atual não tem endpoints /agenda/recorrentes
-  // (mantive as rotas existentes caso você implemente depois)
+
   criarRecorrente:   (body)        => api.post('/agenda/recorrentes', body),
   listarRecorrentes: ()            => api.get('/agenda/recorrentes'),
   deletarRecorrente: (id)          => api.delete(`/agenda/recorrentes/${id}`),

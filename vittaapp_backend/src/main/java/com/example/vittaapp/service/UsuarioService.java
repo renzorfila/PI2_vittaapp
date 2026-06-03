@@ -93,9 +93,10 @@ public class UsuarioService {
     }
 
     // ── Atualizar nome do usuário ─────────────────────────────────
-    public Usuario atualizar(Long id, String novoNome) {
+    public Usuario atualizar(Long id, String novoNome, String foto) {
         Usuario usuario = buscarPorId(id);
-        usuario.setNome(novoNome);
+        if (novoNome != null) usuario.setNome(novoNome);
+        if (foto != null)     usuario.setFoto(foto);
         return repo.save(usuario);
     }
 

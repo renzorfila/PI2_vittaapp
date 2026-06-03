@@ -22,9 +22,9 @@ function Stars({ value }) {
 }
 
 function ProfCard({ perfil, index }) {
-  // Pega a primeira letra do nome do usuário com segurança
-  const primeiraLetra = perfil.usuario?.nome ? perfil.usuario.nome[0].toUpperCase() : 'P'
   const nomeUsuario = perfil.usuario?.nome || 'Profissional'
+  const foto = perfil.imagens?.[0]?.imagem ||
+    perfil.usuario?.foto || null
 
   return (
     <Link to={`/profissionais/${perfil.id}`} style={{ textDecoration: 'none' }}>
@@ -45,55 +45,64 @@ function ProfCard({ perfil, index }) {
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Image / Gradient placeholder */}
+        {/* Topo do card */}
         <div style={{
-          height: 180,
-          background: perfil.imagem ? `url(${perfil.imagem}) center/cover` : GRAD_COLORS[index % GRAD_COLORS.length],
+          height: 200,
+          background: GRAD_COLORS[index % GRAD_COLORS.length],
           position: 'relative',
+          overflow: 'hidden',
           display: 'flex', alignItems: 'flex-end',
         }}>
+
+          {/* Foto como <img> para não esticar — object-fit: cover garante o ajuste correto */}
+          {foto && (
+            <img
+              src={foto}
+              alt={nomeUsuario}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+              }}
+            />
+          )}
+
+          {/* Gradiente escuro na base para o nome ficar legível */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(to top, rgba(30,27,75,0.55) 0%, transparent 60%)',
+            background: 'linear-gradient(to top, rgba(30,27,75,0.80) 0%, transparent 55%)',
           }} />
-          <div style={{
-            position: 'relative', padding: '12px 14px',
-            display: 'flex', alignItems: 'center', gap: 10,
-          }}>
-            <div style={{
-              width: 42, height: 42, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(6px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 18, fontWeight: 700, color: '#fff',
-              border: '2px solid rgba(255,255,255,0.3)',
-            }}>
-              {primeiraLetra}
+
+          {/* Nome e cidade — sem o círculo */}
+          <div style={{ position: 'relative', padding: '14px 16px' }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: '#fff', lineHeight: 1.3 }}>
+              {nomeUsuario}
             </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>{nomeUsuario}</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{perfil.cidade || 'Não informada'}</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>
+              {perfil.cidade || 'Não informada'}
             </div>
           </div>
         </div>
 
-        {/* Body */}
+        {/* Corpo do card */}
         <div style={{ padding: '14px 16px' }}>
-          <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 4 }}>
+          <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 6 }}>
             {perfil.titulo}
           </div>
-          <span className="chip" style={{ marginBottom: 10, fontSize: 12 }}>
+          <span className="chip" style={{ fontSize: 12 }}>
             {perfil.area || 'Geral'}
           </span>
 
           <div style={{
             display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', marginTop: 8, paddingTop: 10,
+            alignItems: 'center', marginTop: 12, paddingTop: 10,
             borderTop: '1px solid var(--border)',
           }}>
             <Stars value={perfil.avaliacaoMedia} />
             <div style={{ fontFamily: 'var(--font-head)', fontWeight: 700, color: 'var(--primary)', fontSize: 15 }}>
-              R$ {Number(perfil.valorPorSessao || 0).toFixed(0)}<span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>/h</span>
+              R$ {Number(perfil.valorPorSessao || 0).toFixed(0)}
+              <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 400 }}>/h</span>
             </div>
           </div>
         </div>

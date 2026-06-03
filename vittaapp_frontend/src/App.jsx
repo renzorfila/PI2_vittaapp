@@ -13,6 +13,7 @@ import Agenda from './pages/Agenda'
 import Inbox from './pages/Inbox'
 import Conversation from './pages/Conversation'
 import RedefinirSenha from './pages/RedefinirSenha'
+import EditarPerfilUsuario from './pages/EditarPerfilUsuario'
 
 export default function App() {
   return (
@@ -31,6 +32,9 @@ export default function App() {
             {/* Protected */}
             <Route path="/perfil/editar" element={
               <ProtectedRoute><PerfilProfissionalForm /></ProtectedRoute>
+            } />
+            <Route path="/usuario/editar" element={
+              <ProtectedRoute><EditarPerfilUsuario /></ProtectedRoute>
             } />
             <Route path="/agenda" element={
               <ProtectedRoute><Agenda /></ProtectedRoute>

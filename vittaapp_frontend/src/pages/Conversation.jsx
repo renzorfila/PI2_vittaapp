@@ -24,21 +24,22 @@ export default function Conversation() {
   useEffect(() => {
     let isMounted = true
 
-    const fetchMessages = async () => {
-      try {
-        const data = await chatAPI.conversa(userId, user.id)
+const fetchMessages = async () => {
+  try {
+    const data = await chatAPI.conversa(userId, user.id)
+    console.log('CONVERSA:', data)
+    if (!isMounted) return
 
-        if (!isMounted) return
+    setMessages(Array.isArray(data) ? data : [])
+    // setOther(data.user)
 
-        setMessages(data.messages)
-        setOther(data.user)
-        setLoading(false)
-      } catch (err) {
-        // mantém loading como false mesmo em erro para não travar a tela
-        if (!isMounted) return
-        setLoading(false)
-      }
-    }
+    setLoading(false)
+  } catch (err) {
+    console.error(err)
+    if (!isMounted) return
+    setLoading(false)
+  }
+}
 
     fetchMessages()
 
@@ -64,7 +65,11 @@ export default function Conversation() {
     setMessages(m => [...m, msg])
     setText('')
     try {
-      await chatAPI.enviar(userId, msg.text)
+      await chatAPI.enviar(
+        user.id,
+        Number(userId),
+        msg.text
+      )
     } catch {
       // Rollback on error
       setMessages(m => m.filter(x => x.id !== msg.id))
@@ -73,7 +78,8 @@ export default function Conversation() {
     }
   }
 
-  const isMe = (msg) => msg.senderId === 'me' || msg.senderId === user?.id
+  const isMe = (msg) =>
+  msg.remetente?.id === user?.id
 
   if (loading) return <div className="spinner" />
 
@@ -99,12 +105,12 @@ export default function Conversation() {
 
       {/* Messages */}
       <div className="card" style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
-        {messages.length === 0 && (
+        {(!messages || messages.length === 0) && (
           <div style={{ textAlign: 'center', color: 'var(--muted)', padding: '40px 0', fontSize: 14 }}>
             Nenhuma mensagem ainda. Diga olá! 👋
           </div>
         )}
-        {messages.map(msg => {
+        {(messages || []).map(msg => {
           const mine = isMe(msg)
           return (
             <div key={msg.id} style={{ display: 'flex', flexDirection: mine ? 'row-reverse' : 'row', gap: 8, alignItems: 'flex-end' }}>
@@ -127,10 +133,10 @@ export default function Conversation() {
                   fontSize: 14, lineHeight: 1.5,
                   fontWeight: mine ? 500 : 400,
                 }}>
-                  {msg.text}
+                  {msg.texto}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 3, textAlign: mine ? 'right' : 'left' }}>
-                  {formatTime(msg.time)}
+                  {formatTime(msg.criadoEm)}
                 </div>
               </div>
             </div>

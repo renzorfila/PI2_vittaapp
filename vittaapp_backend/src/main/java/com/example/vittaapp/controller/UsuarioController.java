@@ -60,13 +60,11 @@ public class UsuarioController {
 
     // ─────────────────────────────────────────────────────────────
     // PUT /api/usuarios/{id}
-    // Body: { "nome": "Novo Nome" }
+    // Body: { "nome": "Novo Nome", "foto": "https://example.com/foto.jpg" }
     // ─────────────────────────────────────────────────────────────
     @PutMapping("/api/usuarios/{id}")
-    public Usuario atualizar(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
-        return service.atualizar(id, body.get("nome"));
+    public Usuario atualizar(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        return service.atualizar(id, body.get("nome"), body.get("foto"));
     }
 
     // ─────────────────────────────────────────────────────────────
