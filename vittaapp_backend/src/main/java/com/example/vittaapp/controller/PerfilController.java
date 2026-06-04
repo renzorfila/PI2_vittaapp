@@ -1,11 +1,13 @@
 package com.example.vittaapp.controller;
 
+import com.example.vittaapp.model.PerfilImage;
 import com.example.vittaapp.model.PerfilProfissional;
 import com.example.vittaapp.service.PerfilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/perfis")
@@ -26,8 +28,6 @@ public class PerfilController {
         return service.buscar(id);
     }
 
-    // NOVA ROTA — busca o perfil pelo ID do usuário dono
-    // GET /api/perfis/usuario/3
     @GetMapping("/usuario/{usuarioId}")
     public PerfilProfissional buscarPorUsuario(@PathVariable Long usuarioId) {
         return service.buscarPorUsuario(usuarioId);
@@ -56,15 +56,33 @@ public class PerfilController {
 
     @PostMapping("/{id}/avaliar")
     public PerfilProfissional avaliar(
-        @PathVariable Long id,
-        @RequestBody java.util.Map<String, Integer> body) {
+            @PathVariable Long id,
+            @RequestBody Map<String, Integer> body) {
+        PerfilProfissional perfil = service.buscar(id);
+        Double mediaAtual = perfil.getAvaliacaoMedia() != null ? perfil.getAvaliacaoMedia() : 0.0;
+        Double nota       = Double.valueOf(body.get("nota"));
+        perfil.setAvaliacaoMedia(mediaAtual == 0.0 ? nota : (mediaAtual + nota) / 2.0);
+        return service.atualizarAvaliacao(perfil);
+    }
 
-    Integer nota = body.get("nota");
+    @GetMapping("/{perfilId}/imagens")
+    public List<PerfilImage> listarImagens(@PathVariable Long perfilId) {
+        return service.listarImagens(perfilId);
+    }
 
-    PerfilProfissional perfil = service.buscar(id);
+    @PostMapping("/{perfilId}/imagens")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PerfilImage adicionarImagem(
+            @PathVariable Long perfilId,
+            @RequestBody Map<String, Object> body) {
+        String  url   = (String) body.get("imagem");
+        Integer ordem = Integer.valueOf(body.get("ordem").toString());
+        return service.adicionarImagem(perfilId, url, ordem);
+    }
 
-    perfil.setAvaliacaoMedia(Double.valueOf(nota));
-
-    return service.atualizarAvaliacao(perfil);
-}
+    @DeleteMapping("/imagens/{imagemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarImagem(@PathVariable Long imagemId) {
+        service.deletarImagem(imagemId);
+    }
 }

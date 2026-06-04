@@ -1,4 +1,3 @@
-// service/UsuarioService.java
 package com.example.vittaapp.service;
 
 import com.example.vittaapp.model.Usuario;
@@ -16,6 +15,7 @@ public class UsuarioService {
 
     private final UsuarioRepository repo;
 
+    // Criptografia com SHA-256 (sem Spring Security)
     private static String hashPassword(String senha) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -35,64 +35,45 @@ public class UsuarioService {
     }
 
     // ── Cadastro ──────────────────────────────────────────────────
-    public Usuario cadastrar(String nome, String email, String senha) {
-
-        // 1. Verifica se o email já existe no banco
-        if (repo.existsByEmail(email)) {
+    public Usuario cadastrar(String nome, String email, String senha, String tipo) {
+        if (repo.existsByEmail(email))
             throw new RuntimeException("Este email já está cadastrado");
-        }
 
-        // 2. Criptografa a senha antes de salvar
-        //    NUNCA salvar senha pura no banco!
-        String senhaCriptografada = hashPassword(senha);
-
-        // 3. Cria o objeto Usuario e salva
-        Usuario usuario = Usuario.builder()
+        return repo.save(Usuario.builder()
             .nome(nome)
             .email(email)
-            .senhaHash(senhaCriptografada)
-            .temPerfilProfissional(false)
-            .build();
-
-        return repo.save(usuario);
+            .senhaHash(hashPassword(senha))                     // ← corrigido
+            .tipo(Usuario.Tipo.valueOf(tipo.toUpperCase()))     // "aluno" → ALUNO
+            .build());
     }
 
     // ── Login ─────────────────────────────────────────────────────
     public Map<String, Object> login(String email, String senha) {
-
-        // 1. Busca o usuário pelo email
         Usuario usuario = repo.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Email ou senha inválidos"));
 
-        // 2. Compara a senha digitada com o hash salvo no banco
-        boolean senhaCorreta = matchesPassword(senha, usuario.getSenhaHash());
-
-        if (!senhaCorreta) {
+        if (!matchesPassword(senha, usuario.getSenhaHash()))
             throw new RuntimeException("Email ou senha inválidos");
-        }
-
-        // 3. Retorna os dados do usuário e um token simples
-        //    (você pode trocar por JWT depois)
-        String token = "vitta-token-" + usuario.getId() + "-" + System.currentTimeMillis();
 
         return Map.of(
-            "token", token,
+            "token", "vitta-token-" + usuario.getId() + "-" + System.currentTimeMillis(),
             "user", Map.of(
-                "id",                    usuario.getId(),
-                "name",                  usuario.getNome(),
-                "email",                 usuario.getEmail(),
-                "temPerfilProfissional", usuario.getTemPerfilProfissional()
+                "id",    usuario.getId(),
+                "name",  usuario.getNome(),
+                "email", usuario.getEmail(),
+                "foto",  usuario.getFoto() != null ? usuario.getFoto() : "",
+                "tipo",  usuario.getTipo().toString()
             )
         );
     }
 
-    // ── Buscar usuário por ID ─────────────────────────────────────
+    // ── Buscar por ID ─────────────────────────────────────────────
     public Usuario buscarPorId(Long id) {
         return repo.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + id));
     }
 
-    // ── Atualizar nome do usuário ─────────────────────────────────
+    // ── Atualizar ─────────────────────────────────────────────────
     public Usuario atualizar(Long id, String novoNome, String foto) {
         Usuario usuario = buscarPorId(id);
         if (novoNome != null) usuario.setNome(novoNome);
@@ -100,11 +81,10 @@ public class UsuarioService {
         return repo.save(usuario);
     }
 
-    // ── Deletar usuário ───────────────────────────────────────────
+    // ── Deletar ───────────────────────────────────────────────────
     public void deletar(Long id) {
-        if (!repo.existsById(id)) {
+        if (!repo.existsById(id))
             throw new RuntimeException("Usuário não encontrado: " + id);
-        }
         repo.deleteById(id);
     }
 }

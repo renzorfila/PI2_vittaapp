@@ -46,7 +46,7 @@ export default function Cadastro() {
     setLoading(true)
     try {
       // 1. Cria o usuário
-      await authAPI.cadastro({ nome: form.nome, email: form.email, senha: form.senha })
+      await authAPI.cadastro({ nome: form.nome, email: form.email, senha: form.senha, tipo:  tipo.toUpperCase() })
 
       // 2. Faz login automaticamente
       const dados = await login({ email: form.email, senha: form.senha })

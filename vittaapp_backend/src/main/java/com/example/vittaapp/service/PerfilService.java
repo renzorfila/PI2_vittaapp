@@ -1,43 +1,29 @@
 package com.example.vittaapp.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
+import com.example.vittaapp.model.PerfilImage;
 import com.example.vittaapp.model.PerfilProfissional;
 import com.example.vittaapp.model.Usuario;
+import com.example.vittaapp.repository.PerfilImageRepository;
 import com.example.vittaapp.repository.PerfilRepository;
 import com.example.vittaapp.repository.UsuarioRepository;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PerfilService {
-    private final PerfilRepository perfilRepository;
-    private final UsuarioRepository usuarioRepository;
 
-    public List<PerfilProfissional> buscarPerfis(String q, String area){
-        if (q != null && !q.isBlank()){
+    private final PerfilRepository      perfilRepository;
+    private final UsuarioRepository     usuarioRepository;
+    private final PerfilImageRepository imagemRepository;
+
+    public List<PerfilProfissional> listar(String q, String area) {
+        if (q != null && !q.isBlank())
             return perfilRepository.findByTituloContainingIgnoreCase(q);
-        }
-        if (area != null && !area.isBlank()){
+        if (area != null && !area.isBlank())
             return perfilRepository.findByAreaAtuacao(area);
-        }
         return perfilRepository.findAll();
-    }
-
-    public PerfilProfissional criar(PerfilProfissional perfil, Long usuarioId){
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        perfil.setUsuario(usuario);
-        PerfilProfissional salvo = perfilRepository.save(perfil);
-
-        usuario.setTemPerfilProfissional(true);
-        usuarioRepository.save(usuario);
-
-        return salvo;
     }
 
     public PerfilProfissional buscar(Long id) {
@@ -45,39 +31,53 @@ public class PerfilService {
             .orElseThrow(() -> new RuntimeException("Perfil não encontrado: " + id));
     }
 
-    public PerfilProfissional atualizar(Long id, PerfilProfissional dados){
-        PerfilProfissional perfil = buscar(id);
-
-        perfil.setTitulo(dados.getTitulo());
-        perfil.setDescricao(dados.getDescricao());
-        perfil.setCidade(dados.getCidade());
-        perfil.setValorPorSessao(dados.getValorPorSessao());
-        perfil.setFormaAtendimento(dados.getFormaAtendimento());
-        perfil.setExperiencia(dados.getExperiencia());
-
-        return perfilRepository.save(perfil);
-    }
-
-    public void deletar(Long id) {
-        if (!perfilRepository.existsById(id)) {
-            throw new RuntimeException("Perfil não encontrado: " + id);
-        }
-        perfilRepository.deleteById(id);
-    }
-
-    public List<PerfilProfissional> listar(String q, String area) {
-        // Em vez de jogar erro, chama o método que você já escreveu lá em cima!
-        return buscarPerfis(q, area);
-    }
-
-    // Busca o perfil pelo ID do usuário dono
     public PerfilProfissional buscarPorUsuario(Long usuarioId) {
         return perfilRepository.findByUsuarioId(usuarioId)
             .orElseThrow(() -> new RuntimeException("Perfil não encontrado para o usuário: " + usuarioId));
     }
 
-    public PerfilProfissional atualizarAvaliacao(PerfilProfissional perfil) {
-    return perfilRepository.save(perfil);
+    public PerfilProfissional criar(PerfilProfissional perfil, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        perfil.setUsuario(usuario);
+        return perfilRepository.save(perfil);
     }
 
+    public PerfilProfissional atualizar(Long id, PerfilProfissional dados) {
+        PerfilProfissional perfil = buscar(id);
+        if (dados.getTitulo()           != null) perfil.setTitulo(dados.getTitulo());
+        if (dados.getDescricao()        != null) perfil.setDescricao(dados.getDescricao());
+        if (dados.getCidade()           != null) perfil.setCidade(dados.getCidade());
+        if (dados.getValorPorSessao()   != null) perfil.setValorPorSessao(dados.getValorPorSessao());
+        if (dados.getFormaAtendimento() != null) perfil.setFormaAtendimento(dados.getFormaAtendimento());
+        if (dados.getExperiencia()      != null) perfil.setExperiencia(dados.getExperiencia());
+        if (dados.getAreaAtuacao()      != null) perfil.setAreaAtuacao(dados.getAreaAtuacao());
+        return perfilRepository.save(perfil);
+    }
+
+    public void deletar(Long id) {
+        if (!perfilRepository.existsById(id))
+            throw new RuntimeException("Perfil não encontrado: " + id);
+        perfilRepository.deleteById(id);
+    }
+
+    public PerfilProfissional atualizarAvaliacao(PerfilProfissional perfil) {
+        return perfilRepository.save(perfil);
+    }
+
+    public List<PerfilImage> listarImagens(Long perfilId) {
+        return imagemRepository.findByPerfilIdOrderByOrdemAsc(perfilId);
+    }
+
+    public PerfilImage adicionarImagem(Long perfilId, String urlImagem, Integer ordem) {
+        PerfilProfissional perfil = buscar(perfilId);
+        return imagemRepository.save(PerfilImage.builder()
+            .perfil(perfil).imagem(urlImagem).ordem(ordem).build());
+    }
+
+    public void deletarImagem(Long imagemId) {
+        if (!imagemRepository.existsById(imagemId))
+            throw new RuntimeException("Imagem não encontrada: " + imagemId);
+        imagemRepository.deleteById(imagemId);
+    }
 }

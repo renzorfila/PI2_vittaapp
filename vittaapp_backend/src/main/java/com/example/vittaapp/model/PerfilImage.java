@@ -1,5 +1,6 @@
 package com.example.vittaapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,15 +16,15 @@ public class PerfilImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Caminho ou URL da imagem armazenada
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String imagem;
 
-    // Define a ordem de exibição na galeria (0 = foto principal)
     @Column(nullable = false)
     private Integer ordem;
 
-    // Perfil ao qual esta imagem pertence
+    // @JsonIgnore quebra o loop infinito:
+    // PerfilProfissional → imagens → perfil → imagens → perfil → ...
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "perfil_id", nullable = false)
     private PerfilProfissional perfil;

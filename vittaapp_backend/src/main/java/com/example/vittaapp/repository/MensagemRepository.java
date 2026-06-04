@@ -28,10 +28,10 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
             SELECT MAX(m2.id)
             FROM Mensagem m2
             WHERE (m2.remetente.id = :meId AND m2.destinatario.id IN (
-                SELECT u.id FROM Usuario u WHERE u.temPerfilProfissional = true
+                SELECT u.id FROM Usuario u WHERE u.tipo = 'PROFISSIONAL'
             ))
                OR (m2.destinatario.id = :meId AND m2.remetente.id IN (
-                SELECT u.id FROM Usuario u WHERE u.temPerfilProfissional = true
+                SELECT u.id FROM Usuario u WHERE u.tipo = 'PROFISSIONAL'
             ))
             GROUP BY 
                 CASE 

@@ -39,7 +39,7 @@ export default function Navbar() {
     navigate('/')
   }
 
-  const hasPerfil = user?.temPerfilProfissional
+  const hasPerfil = user?.tipo === 'PROFISSIONAL'
 
   return (
     <header style={{
@@ -163,10 +163,9 @@ export default function Navbar() {
               }}>
                 <NavMenuItem to="/usuario/editar" label="👤 Meu Perfil" />
                 <NavMenuItem to="/mensagens" label="💬 Mensagens" />
-                <NavMenuItem
-                  to="/perfil/editar"
-                  label={hasPerfil ? '🧑‍💼 Meu Perfil Profissional' : '➕ Criar Perfil Profissional'}
-                />
+                {hasPerfil && (
+                  <NavMenuItem to="/perfil/editar" label="🧑‍💼 Meu Perfil Profissional" />
+                )}
                 <NavMenuItem to="/agenda" label="📅 Minha Agenda" />
                 <div style={{ height: 1, background: 'var(--border)', margin: '6px 0' }} />
                 <button

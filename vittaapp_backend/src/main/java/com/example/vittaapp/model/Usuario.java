@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @Builder
 public class Usuario {
 
+    // Enum correto — não é String, não é null
+    public enum Tipo { ALUNO, PROFISSIONAL }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +31,6 @@ public class Usuario {
     @Column(name = "senha_hash", nullable = false)
     private String senhaHash;
 
-    // Campos adicionados conforme o diagrama
     @Builder.Default
     @Column(nullable = false)
     private Boolean ativo = true;
@@ -36,17 +38,11 @@ public class Usuario {
     @Column(name = "ultimo_login")
     private LocalDateTime ultimoLogin;
 
+    // Campo tipo — substitui temPerfilProfissional
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @Builder.Default
-    @Column(name = "super_usuario")
-    private Boolean superUsuario = false;
-
-    // Staff = funcionário da plataforma (pode moderar conteúdo)
-    @Builder.Default
-    private Boolean staff = false;
-
-    @Builder.Default
-    @Column(name = "tem_perfil_profissional")
-    private Boolean temPerfilProfissional = false;
+    private Tipo tipo = Tipo.ALUNO;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm;
@@ -54,9 +50,7 @@ public class Usuario {
     @PrePersist
     public void prePersist() {
         this.criadoEm = LocalDateTime.now();
-        if (this.ativo == null)               this.ativo = true;
-        if (this.superUsuario == null)        this.superUsuario = false;
-        if (this.staff == null)               this.staff = false;
-        if (this.temPerfilProfissional == null) this.temPerfilProfissional = false;
+        if (this.ativo == null) this.ativo = true;
+        if (this.tipo  == null) this.tipo  = Tipo.ALUNO;
     }
 }

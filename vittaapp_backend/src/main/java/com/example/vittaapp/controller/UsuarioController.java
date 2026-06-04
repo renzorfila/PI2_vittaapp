@@ -23,15 +23,13 @@ public class UsuarioController {
         String nome  = body.get("nome");
         String email = body.get("email");
         String senha = body.get("senha");
+        String tipo  = body.getOrDefault("tipo", "ALUNO"); // padrão: aluno
 
-        if (nome == null || nome.isBlank())
-            throw new RuntimeException("Nome é obrigatório");
-        if (email == null || email.isBlank())
-            throw new RuntimeException("Email é obrigatório");
-        if (senha == null || senha.length() < 6)
-            throw new RuntimeException("Senha deve ter pelo menos 6 caracteres");
+        if (nome == null || nome.isBlank())  throw new RuntimeException("Nome é obrigatório");
+        if (email == null || email.isBlank()) throw new RuntimeException("Email é obrigatório");
+        if (senha == null || senha.length() < 6) throw new RuntimeException("Senha mínimo 6 caracteres");
 
-        return service.cadastrar(nome, email, senha);
+        return service.cadastrar(nome, email, senha, tipo);
     }
 
     // ─────────────────────────────────────────────────────────────
