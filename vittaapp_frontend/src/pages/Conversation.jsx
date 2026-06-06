@@ -20,26 +20,25 @@ export default function Conversation() {
   const bottomRef = useRef(null)
   const intervalRef = useRef(null)
 
-
   useEffect(() => {
     let isMounted = true
 
-const fetchMessages = async () => {
-  try {
-    const data = await chatAPI.conversa(userId, user.id)
-    console.log('CONVERSA:', data)
-    if (!isMounted) return
+  const fetchMessages = async () => {
+    try {
+      const data = await chatAPI.conversa(userId, user.id)
+      console.log('CONVERSA:', data)
+      if (!isMounted) return
 
-    setMessages(Array.isArray(data) ? data : [])
-    // setOther(data.user)
+      setMessages(Array.isArray(data) ? data : [])
+      // setOther(data.user)
 
-    setLoading(false)
-  } catch (err) {
-    console.error(err)
-    if (!isMounted) return
-    setLoading(false)
+      setLoading(false)
+    } catch (err) {
+      console.error(err)
+      if (!isMounted) return
+      setLoading(false)
+    }
   }
-}
 
     fetchMessages()
 
@@ -61,14 +60,14 @@ const fetchMessages = async () => {
     e.preventDefault()
     if (!text.trim()) return
     setSending(true)
-    const msg = { id: Date.now(), senderId: 'me', text: text.trim(), time: new Date().toISOString() }
+    const msg = {id: Date.now(), texto: text.trim(), criadoEm: new Date().toISOString(), remetente: {id: user.id}}
     setMessages(m => [...m, msg])
     setText('')
     try {
       await chatAPI.enviar(
         user.id,
         Number(userId),
-        msg.text
+        msg.texto
       )
     } catch {
       // Rollback on error

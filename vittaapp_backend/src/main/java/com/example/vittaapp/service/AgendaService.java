@@ -11,6 +11,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgendaService {
 
+    private final RecurringSlotRepository recurringRepo;
     private final SlotRepository    slotRepo;
     private final BookingRepository bookingRepo;
     private final UsuarioRepository usuarioRepo;
@@ -74,5 +75,23 @@ public class AgendaService {
 
     public List<Booking> meusAgendamentos(Long studentId) {
         return bookingRepo.findByStudentId(studentId);
+    }
+
+    public RecurringSlot criarRecorrente(RecurringSlot slot, Long tutorId) {
+    Usuario tutor = usuarioRepo.findById(tutorId)
+        .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+    slot.setTutor(tutor);
+    slot.setAtivo(true);
+    return recurringRepo.save(slot);
+    }
+
+    public List<RecurringSlot> listarRecorrentesAtivos(Long tutorId) {
+        return recurringRepo.findByTutorIdAndAtivoTrue(tutorId);
+    }
+
+    public void deletarRecorrente(Long id) {
+        if (!recurringRepo.existsById(id))
+            throw new RuntimeException("Slot recorrente não encontrado");
+        recurringRepo.deleteById(id);
     }
 }

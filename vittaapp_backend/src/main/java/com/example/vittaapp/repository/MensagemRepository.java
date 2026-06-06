@@ -20,6 +20,11 @@ public interface MensagemRepository extends JpaRepository<Mensagem, Long> {
 
     long countByDestinatarioIdAndLidaFalse(Long destinatarioId);
 
+    long countByRemetenteIdAndDestinatarioIdAndLidaFalse(
+    Long remetenteId,
+    Long destinatarioId
+);
+
     // Última mensagem por par de usuários envolvendo :meId
     @Query("""
         SELECT m

@@ -3,6 +3,10 @@ package com.example.vittaapp.controller;
 import com.example.vittaapp.model.AvailabilitySlot;
 import com.example.vittaapp.model.Booking;
 import com.example.vittaapp.service.AgendaService;
+import com.example.vittaapp.model.RecurringSlot;
+import com.example.vittaapp.model.Usuario;
+import com.example.vittaapp.repository.RecurringSlotRepository;
+import com.example.vittaapp.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,8 @@ import java.util.List;
 public class AgendaController {
 
     private final AgendaService service;
+    private final RecurringSlotRepository recurringRepo;
+    private final UsuarioRepository usuarioRepo;
 
     // GET /api/agenda/slots  → todos os slots com vagas
     @GetMapping("/slots")
@@ -27,6 +33,10 @@ public class AgendaController {
         return service.listarSlotsTutor(tutorId);
     }
 
+    @GetMapping("/recorrentes/tutor/{tutorId}")
+    public List<RecurringSlot> listarRecorrentes(@PathVariable Long tutorId) {
+        return recurringRepo.findByTutorIdAndAtivoTrue(tutorId);
+    }
     // POST /api/agenda/slots?tutorId=1
     // Body: { "titulo": "Treino Funcional", "startTime": "2026-06-01T07:00:00", "endTime": "...", "capacity": 1 }
     @PostMapping("/slots")
@@ -36,6 +46,18 @@ public class AgendaController {
             @RequestParam Long tutorId) {
         return service.criarSlot(slot, tutorId);
     }
+
+    @PostMapping("/recorrentes")
+    @ResponseStatus(HttpStatus.CREATED)
+    public RecurringSlot criarRecorrente(
+            @RequestBody RecurringSlot slot,
+            @RequestParam Long tutorId) {
+        Usuario tutor = usuarioRepo.findById(tutorId)
+            .orElseThrow(() -> new RuntimeException("Tutor não encontrado"));
+        slot.setTutor(tutor);
+        slot.setAtivo(true);
+        return recurringRepo.save(slot);
+}
 
     // DELETE /api/agenda/slots/1
     @DeleteMapping("/slots/{id}")

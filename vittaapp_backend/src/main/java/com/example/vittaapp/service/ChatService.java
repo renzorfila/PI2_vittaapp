@@ -61,8 +61,8 @@ public class ChatService {
 
             // unread = mensagens NÃO lidas onde eu (meId) sou o destinatário
             // (lida=false significa que o destinatário ainda não viu)
-            long unread = mensagemRepo.countByDestinatarioIdAndLidaFalse(meId);
-
+            long unread = mensagemRepo
+            .countByRemetenteIdAndDestinatarioIdAndLidaFalse(otherId, meId);
 
             LocalDateTime time = m.getCriadoEm();
 

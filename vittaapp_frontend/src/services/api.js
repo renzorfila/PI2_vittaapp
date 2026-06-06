@@ -82,7 +82,7 @@ export const agendaAPI = {
   },
 
   // backend atual não tem endpoints /agenda/recorrentes
-
+  criarSlot: (body, tutorId) => api.post(`/agenda/slots?tutorId=${tutorId}`, body),
   criarRecorrente:   (body)        => api.post('/agenda/recorrentes', body),
   listarRecorrentes: ()            => api.get('/agenda/recorrentes'),
   deletarRecorrente: (id)          => api.delete(`/agenda/recorrentes/${id}`),

@@ -36,7 +36,12 @@ function CreateSlotModal({ onClose, onCreate }) {
     if (Object.keys(errs).length) { setErrors(errs); return }
     setLoading(true)
     try {
-      await agendaAPI.criarRecorrente({ ...form, weekday: Number(form.weekday), capacity: Number(form.capacity) })
+      await agendaAPI.criarSlot({
+        titulo:    form.title,
+        startTime: `${form.start_date}T${form.start_time}:00`,
+        endTime:   `${form.start_date}T${form.end_time}:00`,
+        capacity:  Number(form.capacity),
+      }, user.id)
       toast?.show('Série criada! Próximas 8 semanas geradas.')
       onCreate()
       onClose()
@@ -189,7 +194,7 @@ export default function Agenda() {
           <h1 style={{ fontFamily: 'var(--font-head)', fontSize: 24, marginBottom: 4 }}>Agenda</h1>
           <p style={{ color: 'var(--muted)', fontSize: 14 }}>Gerencie horários disponíveis e agendamentos</p>
         </div>
-        {user?.temPerfilProfissional && (
+        {user?.tipo === 'PROFISSIONAL' && (
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>
             + Nova série
           </button>
