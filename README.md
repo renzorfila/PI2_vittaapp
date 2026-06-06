@@ -46,3 +46,10 @@ npm run dev
 - Perfis profissionais
 - Agendamentos
 - Disponibilidade de horários
+
+## Banco de Dados
+
+O script de criação do banco encontra-se em:
+
+```txt
+/database/vittaapp.sql
