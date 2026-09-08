@@ -39,6 +39,9 @@ public class UsuarioController {
     // ─────────────────────────────────────────────────────────────
     @PostMapping("/api/auth/login")
     public Map<String, Object> login(@RequestBody Map<String, String> body) {
+
+        System.out.println("BODY RECEBIDO: " + body);
+
         String email = body.get("email");
         String senha = body.get("senha");
 

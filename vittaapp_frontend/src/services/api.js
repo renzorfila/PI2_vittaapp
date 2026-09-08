@@ -23,8 +23,11 @@ async function request(method, path, body = null, opts = {}) {
     headers,
   }
 
-  if (body) config.body = JSON.stringify(body)
-
+  if (body) {
+    console.log("BODY ENVIADO:", body)
+    config.body = JSON.stringify(body)
+  }
+  
   const res = await fetch(`${BASE_URL}${path}`, config)
 
   if (!res.ok) {

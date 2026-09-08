@@ -146,14 +146,18 @@ export default function Agenda() {
 
 
   const refreshData = async () => {
+  try {
+    const [slotsData, bookingsData] = await Promise.all([
+      agendaAPI.listarSlots(),
+      agendaAPI.meusAgendamentos(user.id)
+    ])
 
-    agendaAPI.listarSlots()
-      .then(setSlots)
-      .catch(console.error)
+    setSlots(slotsData)
+    setBookings(bookingsData)
 
-    agendaAPI.meusAgendamentos()
-      .then(setBookings)
-      .catch(console.error)
+  } catch (err) {
+    console.error(err)
+    }
   }
 
   const handleBook = async (slot) => {
@@ -184,8 +188,17 @@ export default function Agenda() {
     }
   }
 
-  const statusColor = { confirmed: 'var(--primary)', pending: '#f59e0b', cancelled: 'var(--danger)' }
-  const statusLabel = { confirmed: 'Confirmado', pending: 'Pendente', cancelled: 'Cancelado' }
+  const statusColor = {
+    CONFIRMED: 'var(--primary)',
+    PENDING: '#f59e0b',
+    CANCELLED: 'var(--danger)'
+  }
+
+  const statusLabel = {
+    CONFIRMED: 'Confirmado',
+    PENDING: 'Pendente',
+    CANCELLED: 'Cancelado'
+  }
 
   return (
     <div className="page" style={{ maxWidth: 900 }}>
@@ -295,11 +308,14 @@ export default function Agenda() {
                       <span style={{ fontSize: 12, color: statusColor[b.status], fontWeight: 600 }}>
                         {statusLabel[b.status]}
                       </span>
-                      {b.status !== 'cancelled' && (
-                        <button className="btn btn-danger btn-sm" onClick={() => handleCancel(b.id)}>
-                          Cancelar
-                        </button>
-                      )}
+                      {b.status !== 'CANCELLED' && (
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleCancel(b.id)}
+                      >
+                        Cancelar
+                      </button>
+                    )}
                     </div>
                   </div>
                 ))}

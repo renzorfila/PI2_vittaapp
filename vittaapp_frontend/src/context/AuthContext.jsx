@@ -16,12 +16,21 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (email, senha) => {
-    const data = await api.post('/auth/login', { email, senha })
-    setUser(data.user)
-    localStorage.setItem('vitta_user', JSON.stringify(data.user))
-    localStorage.setItem('vitta_token', data.token)
-    return data
-  }
+
+  console.log("EMAIL:", email)
+  console.log("SENHA:", senha)
+
+  const data = await api.post('/auth/login', {
+    email,
+    senha
+  })
+
+  setUser(data.user)
+  localStorage.setItem('vitta_user', JSON.stringify(data.user))
+  localStorage.setItem('vitta_token', data.token)
+
+  return data
+}
 
   const logout = () => {
     setUser(null)

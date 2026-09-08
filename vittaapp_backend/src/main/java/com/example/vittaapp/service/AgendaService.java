@@ -40,11 +40,15 @@ public class AgendaService {
 
     @Transactional
     public Booking agendar(Long slotId, Long studentId) {
+
         AvailabilitySlot slot = slotRepo.findById(slotId)
             .orElseThrow(() -> new RuntimeException("Slot não encontrado"));
 
         if (slot.getAvailable() <= 0)
             throw new RuntimeException("Sem vagas disponíveis");
+
+        if (bookingRepo.existsByStudentIdAndSlotId(studentId, slotId))
+            throw new RuntimeException("Você já possui um agendamento para este horário");
 
         Usuario student = usuarioRepo.findById(studentId)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -52,22 +56,30 @@ public class AgendaService {
         slot.setAvailable(slot.getAvailable() - 1);
         slotRepo.save(slot);
 
-        return bookingRepo.save(Booking.builder()
-            .slot(slot)
-            .student(student)
-            .status(Booking.BookingStatus.CONFIRMED)
-            .build());
+        return bookingRepo.save(
+            Booking.builder()
+                .slot(slot)
+                .student(student)
+                .status(Booking.BookingStatus.CONFIRMED)
+                .build()
+        );
     }
 
     @Transactional
     public Booking cancelar(Long bookingId) {
+
         Booking booking = bookingRepo.findById(bookingId)
             .orElseThrow(() -> new RuntimeException("Agendamento não encontrado"));
+
+        if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
+            throw new RuntimeException("Agendamento já cancelado");
+        }
 
         booking.setStatus(Booking.BookingStatus.CANCELLED);
 
         AvailabilitySlot slot = booking.getSlot();
         slot.setAvailable(slot.getAvailable() + 1);
+
         slotRepo.save(slot);
 
         return bookingRepo.save(booking);
